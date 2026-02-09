@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #btn {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      padding: 12px 24px; background: #ff0000; color: white; border: none; 
+      border-radius: 8px; font-size: 16px; font-weight: bold; z-index: 10;
+      display: none; box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <button id="btn">Tap to Watch Magic</button>
+
+  <a-scene mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.0001; filterBeta: 0.001;" 
+           vr-mode-ui="enabled: false" 
+           device-orientation-permission-ui="enabled: false" 
+           color-space="sRGB" 
+           renderer="colorManagement: true, physicallyCorrectLights">
+    
+    <a-assets>
+      <video id="vid" src="./video.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity mindar-image-target="targetIndex: 0">
+      
+      <a-video src="#vid" position="0 0 0" height="1" width="1.5" rotation="0 0 0"></a-video>
+      
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const btn = document.querySelector("#btn");
+    const video = document.querySelector("#vid");
+    const scene = document.querySelector("a-scene");
+
+    scene.addEventListener("loaded", () => { btn.style.display = "block"; });
+
+    btn.addEventListener("click", () => {
+      video.play();
+      btn.style.display = "none";
+    });
+
+    const target = document.querySelector('[mindar-image-target]');
+    target.addEventListener("targetFound", () => { video.play(); });
+    target.addEventListener("targetLost", () => { video.pause(); });
+  </script>
+</body>
+
+</html>
